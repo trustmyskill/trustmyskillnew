@@ -1,4 +1,5 @@
-const WS_URL = `ws://${location.host}`;
+const WS_PROTOCOL = location.protocol === 'https:' ? 'wss:' : 'ws:';
+const WS_URL = `${WS_PROTOCOL}//${location.host}`;
 let ws = null;
 let clients = {};
 let selectedClient = null;
