@@ -8,6 +8,7 @@ let prevClientIds = new Set();
 let screenW = 1920, screenH = 1080;
 let inputEnabled = false;
 let inputMode = 'all';
+let wsReconnectTimer = null;
 let sessionToken = localStorage.getItem('foxrat_token') || null;
 let currentUsername = localStorage.getItem('foxrat_user') || null;
 
@@ -98,7 +99,6 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 // ===== WebSocket =====
-let wsReconnectTimer = null;
 function connectWS() {
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
     if (wsReconnectTimer) { clearTimeout(wsReconnectTimer); wsReconnectTimer = null; }
