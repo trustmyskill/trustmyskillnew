@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "password": "097e803b0b32094d39ce58af9fe26016:e4fe87ba17fde9657f41decc35a8aaf03c8dc42eeb45fb674d1fe0a54f799fb9dd726665d32f8f0533ef95725edcd40d1b0cdd67920865a238a90acc418af298",
+    "created": 1784822516827
+  },
+  "foxrat": {
+    "password": "a72692e2dce1f1f570eedc84c5965cf5:4a3415448fcd0521e3af98fd972cbb28cf5e3a1f7af28dee7e5e5d3cf8af9d805738a15a3d663179b38ab2548cc4ecb4b2388f3643a3c1cbb952d16cf280be70",
+    "created": 1784822604800
+  }
+}

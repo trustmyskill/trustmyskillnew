@@ -1,0 +1,7 @@
+websocket-client
+psutil
+Pillow
+pynput
+pywin32
+pyttsx3
+requests

