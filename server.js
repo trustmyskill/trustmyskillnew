@@ -183,8 +183,10 @@ setInterval(() => {
     });
 }, 300000);
 
-const builder = require('./server_build');
+let builder = null;
+try { builder = require('./server_build'); } catch(_) { console.log('[Builder] Not available (Windows only)'); }
 app.post('/build', authMiddleware, express.json({ limit: '50mb' }), async (req, res) => {
+    if (!builder) return res.status(503).json({ error: 'Builder not available on this server' });
     try {
         const opts = { ...req.body, host: req.hostname === '0.0.0.0' ? '127.0.0.1' : req.hostname, port: PORT };
         const exeData = builder.build(opts);
